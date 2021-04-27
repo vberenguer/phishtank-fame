@@ -70,15 +70,15 @@ class Phishtank_module(ProcessingModule):
 	        	"app_key": self.api_key
 	        }
 
-			r = requests.post(url=url, headers = header)
-			tree=ET.fromstring(r.text)
-			for element in tree.findall('results')[0].findall('url0')[0]:
-				if element.tag == "in_database" and element.text == "true":
-					self.results["results"]='PHISHING'
-				elif element.tag == "in_database" and element.text == "false":
-					self.results["results"]='NOT FOUND'
+		r = requests.post(url=url, headers = header)
+		tree=ET.fromstring(r.text)
+		for element in tree.findall('results')[0].findall('url0')[0]:
+			if element.tag == "in_database" and element.text == "true":
+				self.results["results"]='PHISHING'
+			elif element.tag == "in_database" and element.text == "false":
+				self.results["results"]='NOT FOUND'
 
-			return True
-			
-		except Exception:
-			return False
+		return True
+
+	except Exception:
+		return False
