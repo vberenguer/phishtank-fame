@@ -55,30 +55,34 @@ class Phishtank_module(ProcessingModule):
 
 
     def each_with_type(self, target, file_type):
+	if file_type == "url":
+		
+		# Set root URLs
+		self.results = dict()
+		try:
 
-        # Set root URLs
-        self.results = dict()
-        try:
 
+			urlSafeEncodedBytes = base64.urlsafe_b64encode(target.encode("utf-8"))
+			urlSafeEncodedStr = str(urlSafeEncodedBytes, "utf-8")
+			url=self.phishtank_url+urlSafeEncodedStr
 
-        	urlSafeEncodedBytes = base64.urlsafe_b64encode(target.encode("utf-8"))
-        	urlSafeEncodedStr = str(urlSafeEncodedBytes, "utf-8")
-        	url=self.phishtank_url+urlSafeEncodedStr
+			header = {
+				"format":"json",
+				"app_key": self.api_key
+			}
 
-        	header = {
-	        	"format":"json",
-	        	"app_key": self.api_key
-	        }
+			r = requests.post(url=url, headers = header)
+			tree=ET.fromstring(r.text)
+			for element in tree.findall('results')[0].findall('url0')[0]:
+				if element.tag == "in_database" and element.text == "true":
+					self.results["results"]='PHISHING'
+				elif element.tag == "in_database" and element.text == "false":
+					self.results["results"]='NOT FOUND'
 
-		r = requests.post(url=url, headers = header)
-		tree=ET.fromstring(r.text)
-		for element in tree.findall('results')[0].findall('url0')[0]:
-			if element.tag == "in_database" and element.text == "true":
-				self.results["results"]='PHISHING'
-			elif element.tag == "in_database" and element.text == "false":
-				self.results["results"]='NOT FOUND'
+			return True
 
-		return True
-
-	except Exception:
+		except Exception:
+			return False
+	else:
 		return False
+	
