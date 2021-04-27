@@ -63,7 +63,7 @@ class Phishtank_module(ProcessingModule):
 
 
 			urlSafeEncodedBytes = base64.urlsafe_b64encode(target.encode("utf-8"))
-			urlSafeEncodedStr = str(urlSafeEncodedBytes, "utf-8")
+			urlSafeEncodedStr = str(urlSafeEncodedBytes)
 			url=self.phishtank_url+urlSafeEncodedStr
 
 			header = {
